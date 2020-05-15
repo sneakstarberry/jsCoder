@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background:#cccccc;
+        }
+        .dropdown {
+            background:white;
+            border: 1px solid #aaaaaa;
+            width: 200px;
+            height: 30px;
+            box-shadow: 2px 2px 2px #999999;
+            border-radius: 5px;
+            color: #333333;
+
+            line-height: 30px;
+            user-select:none;
+            cursor: pointer;
+            display: inline-block;
+            font-size:1.2em;
+            font-family: Arial;
+            position: relative;
+        }
+
+        .dropdown_value {
+            display:inline-block;
+            padding-left:5px;
+        }
+
+        .dropdown_arrow {
+            position:absolute;
+            right: 5px;
+            top: 0px;
+            color: #ccc;
+            font-size: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown_panel {
+            position:absolute;
+            background: transparent;
+            width: calc(100% + 11px);
+            z-index: 9999;
+            height: 203px;
+            left:-1px;
+            top: 28px;
+            overflow:hidden;
+            pointer-events: none;
+        }
+
+        .dropdown_items {
+            position:absolute;
+            pointer-events: all;
+            top:0px;
+            width:calc(100% - 11px);
+            max-height:170px;
+            background:white;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            box-shadow:2px 2px 2px #999;
+            overflow-y: auto;
+            border: 1px solid #aaa;
+            transform: translate(0px, -200px);
+            transition: 0.3s all ease-out;
+        }
+
+        .dropdown_item {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id = "dd1">
+
+    </div>
+    <script>
+        function Dropdown(o) {
+            this.option =o;
+            window.getdd = function(elem){
+                var id = elem.closest('.dropdown').parentElement.id;
+                return window.dropdowns[id];
+            }
+            this.init = function() {
+                this.elem = document.getElementById(this.option.id);
+
+                var val = this.option.val;
+                var html = `<div class = 'dropdown'>
+                                <div class="dropdown_value">${val}</div>
+                                <div class="dropdown_arrow">♥</div>
+                                <div class="dropdown_panel">
+                                    <div class="dropdown_items">
+                                    </div>
+                                </div>
+                            </div>`;
+                this.elem.innerHTML = html;
+                var elem = this.elem;
+
+                this.elem.style.display = 'inline-block';
+
+                if (!window.dropdowns) window.dropdowns = {};
+                window.dropdowns[this.option.id] = this;
+                this.items = elem.querySelector(".dropdown_items");
+                this.arrow = elem.querySelector(".dropdown_arrow");
+                this.value = elem.querySelector(".dropdown_value");
+                
+                var data = this.option.data;
+                html = "";
+                data.forEach(elem=>{
+                    html += `<div class='dropdown_item' onmousedown = 'var self=getdd(this);self.clicked(this)'>${elem}</div>
+                    `;
+                });
+                this.items.innerHTML = html;
+
+                var self = this;
+                document.addEventListener('mousedown', () => {
+                    self.hide();
+                });
+
+                this.elem.addEventListener('mousedown', ()=>{
+                    event.stopPropagation();
+                    if(self.isVisible){
+                        self.hide();
+                    }
+                    else{
+                        self.show();
+                    }
+                });
+            }
+            this.clicked = elem => {
+                event.stopPropagation();
+                this.hide();
+
+                var newval = elem.innerHTML;
+                this.value.innerHTML = newval;
+
+                if(this.option.cb){
+                    this.options.cb(newval);
+                }
+            }
+            this.show = () => {
+                this.isVisible = true
+                this.items.style.transform = "translate(0px, 0px)";
+                this.arrow.style.transform = 'rotate(180deg)';
+            }
+            this.hide = () =>{
+                this.isVisible = false;
+                this.items.style.transform = "translate(0px, -255px)";
+                this.arrow.style.transform = 'rotate(0deg)';
+            }
+            this.init();
+            return this;
+        }
+
+        var dd1 = new Dropdown({
+            id: 'dd1',
+            val: 'cat',
+            data: ['cat', 'dog', 'mouse', 'horse', 'rabbit', 'lion', 'bear'],
+            cb: (newval) => {
+                alert(newval);
+            }
+        })
+        
+    </script>
+</body>
+</html>
