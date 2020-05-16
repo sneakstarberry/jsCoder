@@ -82,6 +82,7 @@
             this.option =o;
             window.getdd = function(elem){
                 var id = elem.closest('.dropdown').parentElement.id;
+                console.log(window.dropdowns)
                 return window.dropdowns[id];
             }
             this.init = function() {
@@ -138,7 +139,7 @@
                 this.value.innerHTML = newval;
 
                 if(this.option.cb){
-                    this.options.cb(newval);
+                    this.option.cb(newval);
                 }
             }
             this.show = () => {
